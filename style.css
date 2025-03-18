@@ -1,0 +1,343 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+body {
+    font-family: 'Poppins', 'Tahoma', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+    color: #f8f9fa;
+    line-height: 1.6;
+}
+
+header {
+    background: linear-gradient(135deg, #0c2e5a, #265895, #0c2e5a);
+    color: white;
+    padding: 40px 10%;
+    text-align: center;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #ff4c29, #ff7f50, #ff4c29);
+    z-index: 5;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 3.2em;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    position: relative;
+    display: inline-block;
+}
+
+header h1::after {
+    content: '';
+    position: absolute;
+    width: 60%;
+    height: 3px;
+    background-color: #ff4c29;
+    bottom: -10px;
+    left: 20%;
+    border-radius: 3px;
+}
+
+header p {
+    font-size: 1.3em;
+    margin-top: 16px;
+    opacity: 0.9;
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+
+header a {
+    text-decoration: none;
+    color: white;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to right, #1e314f, #2b446a, #1e314f);
+    padding: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0;
+    font-size: 1.1em;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+    padding: 20px 30px;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    text-transform: uppercase;
+}
+
+nav a:after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 3px;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ff4c29;
+    transition: width 0.3s ease;
+}
+
+nav a:hover {
+    color: #ff4c29;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+nav a:hover:after {
+    width: 70%;
+}
+
+section.glowna {
+    text-align: center;
+    padding: 70px 10%;
+    color: white;
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://via.placeholder.com/1920x1080');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+section.glowna h2 {
+    font-size: 3.5em;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+section.glowna p {
+    font-size: 1.5em;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.zawartosc {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 50px 10%;
+    gap: 30px;
+}
+
+.zawartosc .karta {
+    background: linear-gradient(145deg, #1a1a2e, #282846);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    max-width: 320px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.zawartosc .karta:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+.zawartosc .karta h3 {
+    margin: 15px 0;
+    font-size: 1.5em;
+    color: #ff4c29;
+}
+
+.zawartosc .karta p {
+    font-size: 1.1em;
+    line-height: 1.6;
+}
+
+.tabela-sekcja {
+    padding: 3rem 10%;
+    background: rgba(26, 26, 46, 0.8);
+    margin: 3rem 0;
+}
+
+.tabela-sekcja h1 {
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2.5em;
+    font-weight: 600;
+}
+
+.tabela-sekcja table, .tabela-najlepsi-plywacy {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(22, 33, 62, 0.7);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.tabela-sekcja th, .tabela-najlepsi-plywacy th {
+    background: linear-gradient(to right, #0f3460, #1a4c7c);
+    color: white;
+    padding: 15px;
+    text-align: left;
+    font-weight: 500;
+}
+
+.tabela-sekcja td, .tabela-najlepsi-plywacy td {
+    padding: 15px;
+    color: #e8e8e8;
+    border-bottom: 1px solid rgba(42, 42, 74, 0.5);
+}
+
+.tabela-sekcja tr:hover, .tabela-najlepsi-plywacy tr:hover {
+    background: rgba(31, 43, 77, 0.8);
+}
+
+.formularz-kontener {
+    padding: 3rem 10%;
+    background: rgba(26, 26, 46, 0.8);
+    color: #e8e8e8;
+}
+
+.formularz-kontener h2 {
+    text-align: center;
+    font-size: 2.5em;
+    margin-bottom: 2rem;
+    color: #ffffff;
+}
+
+.formularz-kontener form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+    background: rgba(22, 33, 62, 0.7);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.formularz-kontener form div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.formularz-kontener form label {
+    font-weight: 500;
+    font-size: 1.1em;
+}
+
+.formularz-kontener form input, 
+.formularz-kontener form select {
+    padding: 12px;
+    border: 1px solid rgba(204, 204, 204, 0.3);
+    border-radius: 8px;
+    font-size: 1em;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    transition: all 0.3s ease;
+}
+
+.formularz-kontener form input:focus, 
+.formularz-kontener form select:focus {
+    outline: none;
+    border-color: #ff4c29;
+    box-shadow: 0 0 0 2px rgba(255, 76, 41, 0.3);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.formularz-kontener form button {
+    background: linear-gradient(to right, #ff4c29, #ff7f50);
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.formularz-kontener form button:hover {
+    background: linear-gradient(to right, #e83e1d, #ff6b3d);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(255, 76, 41, 0.4);
+}
+
+#najlepszyPływak {
+    text-align: center;
+    background: linear-gradient(to right, #0f3460, #1a4c7c);
+    padding: 4rem 0;
+    margin: 3rem 10%;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+#najlepszyPływak h1 {
+    color: #ffffff;
+    font-size: 2.8em;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 700;
+}
+
+#najlepszyPływak img {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    border: 6px solid #ff4c29;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    transition: all 0.5s ease;
+    margin: 1.5rem 0;
+    object-fit: cover;
+}
+
+#najlepszyPływak img:hover {
+    transform: scale(1.08) rotate(5deg);
+    border-color: #ff7f50;
+}
+
+#najlepszyPływak h3 {
+    color: #ffffff;
+    font-size: 2em;
+    margin-top: 2rem;
+    font-weight: 600;
+}
+
+#najlepszyPływak .osiagniecia {
+    color: #e8e8e8;
+    margin-top: 1.5rem;
+    font-size: 1.2em;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.8;
+    padding: 0 20px;
+}
+
+footer {
+    text-align: center;
+    padding: 30px;
+    background: #16213e;
+    color: #bbb;
+    font-size: 1em;
+}
