@@ -4,7 +4,8 @@ $najlepsi_plywacy = [];
 $blad_polaczenia = false;
 
 try {
-    $polaczenie = new mysqli("localhost", "root", "", "plywanie");
+    $polaczenie = new mysqli("sql308.infinityfree.com", "if0_38587063", "gaVmPArJ1XJn", "if0_38587063_plywanie");
+
 
     if ($polaczenie->connect_error) {
         throw new Exception("Błąd połączenia: " . $polaczenie->connect_error);
