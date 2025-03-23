@@ -5,10 +5,10 @@ $error_message = null;
 
 try {
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $conn = new mysqli("localhost", "root", "", "plywanie");
+        $polaczenie = new mysqli("sql308.infinityfree.com", "if0_38587063", "gaVmPArJ1XJn", "if0_38587063_plywanie");
         
-        if ($conn->connect_error) {
-            throw new Exception("Connection failed: " . $conn->connect_error);
+        if ($polaczenie->connect_error) {
+            throw new Exception("Connection failed: " . $polaczenie->connect_error);
         }
 
         $zawodnik_imie = filter_input(INPUT_POST, 'zawodnik-imie', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -36,9 +36,10 @@ try {
             throw new Exception("Nieprawidłowa data");
         }
 
-        $conn->begin_transaction();
+        $polaczenie->begin_transaction();
 
-        $stmt = $conn->prepare("SELECT id_szkoly FROM szkola WHERE nazwa = ? AND miejscowosc = ?");
+        // Check if the school already exists
+        $stmt = $polaczenie->prepare("SELECT id_szkoly FROM szkola WHERE nazwa = ? AND miejscowosc = ?");
         $stmt->bind_param("ss", $szkola_nazwa, $miejscowosc);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -47,41 +48,46 @@ try {
             $row = $result->fetch_assoc();
             $id_szkoly = $row['id_szkoly'];
         } else {
-            $stmt = $conn->prepare("INSERT INTO szkola (nazwa, miejscowosc) VALUES (?, ?)");
+            // Insert new school
+            $stmt = $polaczenie->prepare("INSERT INTO szkola (nazwa, miejscowosc) VALUES (?, ?)");
             $stmt->bind_param("ss", $szkola_nazwa, $miejscowosc);
             $stmt->execute();
             $id_szkoly = $stmt->insert_id;
         }
 
-        $stmt = $conn->prepare("INSERT INTO opiekun (imie, nazwisko, id_szkoly) VALUES (?, ?, ?)");
+        // Insert new guardian
+        $stmt = $polaczenie->prepare("INSERT INTO opiekun (imie, nazwisko, id_szkoly) VALUES (?, ?, ?)");
         $stmt->bind_param("ssi", $opiekun_imie, $opiekun_nazwisko, $id_szkoly);
         $stmt->execute();
         $id_opiekuna = $stmt->insert_id;
 
-        $stmt = $conn->prepare("INSERT INTO zawodnik (imie, nazwisko, id_szkoly, id_opiekuna, rok_urodzenia) VALUES (?, ?, ?, ?, ?)");
+        // Insert new swimmer
+        $stmt = $polaczenie->prepare("INSERT INTO zawodnik (imie, nazwisko, id_szkoly, id_opiekuna, rok_urodzenia) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param("ssiis", $zawodnik_imie, $zawodnik_nazwisko, $id_szkoly, $id_opiekuna, $zawodnik_rok);
         $stmt->execute();
         $id_zawodnika = $stmt->insert_id;
 
-        $stmt = $conn->prepare("INSERT INTO wynik (id_zawodnik, id_szkoly, czas, dystans, data_plywania, style) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("iissss", $id_zawodnika, $id_szkoly, $wynik_czas, $dystans, $data_plywania, $styl);
+        // Insert new result
+        $stmt = $polaczenie->prepare("INSERT INTO wynik (id_zawodnik, id_szkoly, czas, dystans, data_plywania) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("iisss", $id_zawodnika, $id_szkoly, $wynik_czas, $dystans, $data_plywania);
         $stmt->execute();
         $id_wyniku = $stmt->insert_id;
 
-        $stmt = $conn->prepare("INSERT INTO zgloszenie (id_zawodnik, id_szkoly, id_opiekuna, id_wyniku) VALUES (?, ?, ?, ?)");
+        // Insert new registration
+        $stmt = $polaczenie->prepare("INSERT INTO zgloszenie (id_zawodnik, id_szkoly, id_opiekuna, id_wyniku) VALUES (?, ?, ?, ?)");
         $stmt->bind_param("iiii", $id_zawodnika, $id_szkoly, $id_opiekuna, $id_wyniku);
         $stmt->execute();
 
-        $conn->commit();
+        $polaczenie->commit();
         $success_message = "Zapisano pomyślnie!";
         
         $stmt->close();
-        $conn->close();
+        $polaczenie->close();
     }
 } catch (Exception $e) {
-    if (isset($conn) && !$conn->connect_error) {
-        $conn->rollback();
-        $conn->close();
+    if (isset($polaczenie) && !$polaczenie->connect_error) {
+        $polaczenie->rollback();
+        $polaczenie->close();
     }
     $connection_error = true;
     $error_message = "Wystąpił błąd: " . $e->getMessage();
@@ -135,7 +141,7 @@ try {
             </div>
             <div>
                 <label for="wynik-czas">Wynik (czas w formacie HH:MM:SS)</label>
-                <input type="time" id="wynik-czas" name="wynik-czas" step="1" required>
+                <input type="text" id="wynik-czas" name="wynik-czas" pattern="([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]" required>
             </div>
             <div>
                 <label for="dystans">Dystans (w metrach)</label>
