@@ -89,9 +89,10 @@ try {
         <p>Sport, emocje, rywalizacja</p>
     </header>
     <nav>
-        <a href="index.php">Strona Główna</a>
-        <a href="zapisy.php">Zapisy</a>
-    </nav>
+    <a href="index.php">Strona Główna</a>
+    <a href="zapisy.php">Zapisy</a>
+    <a href="zawody.php">Zawody</a>
+</nav>
     <section class="glowna">
         <h2>Najlepsze miejsce dla pływaków</h2>
         <p>Dołącz do naszych zawodów i poczuj prawdziwą rywalizację!</p>

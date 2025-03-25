@@ -22,10 +22,6 @@ try {
         if (!$zawodnik_rok || $zawodnik_rok < 1900 || $zawodnik_rok > 2025) {
             throw new Exception("Nieprawidłowy rok urodzenia");
         }
-        }
-        if (!strtotime($data_plywania)) {
-            throw new Exception("Nieprawidłowa data");
-        }
 
         $conn->begin_transaction();
 
@@ -54,13 +50,8 @@ try {
         $stmt->execute();
         $id_zawodnika = $stmt->insert_id;
 
-        $stmt = $conn->prepare("INSERT INTO wynik (id_zawodnik, id_szkoly, czas, dystans, data_plywania, style) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("iissss", $id_zawodnika, $id_szkoly, $wynik_czas, $dystans, $data_plywania, $styl);
-        $stmt->execute();
-        $id_wyniku = $stmt->insert_id;
-
-        $stmt = $conn->prepare("INSERT INTO zgloszenie (id_zawodnik, id_szkoly, id_opiekuna, id_wyniku) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("iiii", $id_zawodnika, $id_szkoly, $id_opiekuna, $id_wyniku);
+        $stmt = $conn->prepare("INSERT INTO zgloszenie (id_zawodnik, id_szkoly, id_opiekuna) VALUES (?, ?, ?)");
+        $stmt->bind_param("iii", $id_zawodnika, $id_szkoly, $id_opiekuna);
         $stmt->execute();
 
         $conn->commit();
@@ -94,6 +85,7 @@ try {
     <nav>
         <a href="index.php">Strona Główna</a>
         <a href="zapisy.php">Zapisy</a>
+        <a href="zawody.php">Zawody</a>
     </nav>
     <section id="zapisy" class="formularz-kontener">
         <h2>Formularz zapisów</h2>
