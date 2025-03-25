@@ -16,21 +16,12 @@ try {
         $zawodnik_rok = filter_input(INPUT_POST, 'zawodnik-rok', FILTER_VALIDATE_INT);
         $opiekun_imie = filter_input(INPUT_POST, 'opiekun-imie', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $opiekun_nazwisko = filter_input(INPUT_POST, 'opiekun-nazwisko', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $wynik_czas = filter_input(INPUT_POST, 'wynik-czas', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $dystans = filter_input(INPUT_POST, 'dystans', FILTER_VALIDATE_INT);
-        $data_plywania = filter_input(INPUT_POST, 'data-plywania', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $szkola_nazwa = filter_input(INPUT_POST, 'szkola', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $miejscowosc = filter_input(INPUT_POST, 'miejscowosc', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $styl = filter_input(INPUT_POST, 'styl', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         if (!$zawodnik_rok || $zawodnik_rok < 1900 || $zawodnik_rok > 2025) {
             throw new Exception("Nieprawidłowy rok urodzenia");
         }
-        if (!$dystans || $dystans < 25 || $dystans > 1500) {
-            throw new Exception("Nieprawidłowy dystans");
-        }
-        if (!preg_match("/^([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/", $wynik_czas)) {
-            throw new Exception("Nieprawidłowy format czasu");
         }
         if (!strtotime($data_plywania)) {
             throw new Exception("Nieprawidłowa data");
@@ -134,33 +125,12 @@ try {
                 <input type="text" id="opiekun-nazwisko" name="opiekun-nazwisko" required maxlength="40">
             </div>
             <div>
-                <label for="wynik-czas">Wynik (czas w formacie HH:MM:SS)</label>
-                <input type="time" id="wynik-czas" name="wynik-czas" step="1" required>
-            </div>
-            <div>
-                <label for="dystans">Dystans (w metrach)</label>
-                <input type="number" id="dystans" name="dystans" min="25" max="1500" required>
-            </div>
-            <div>
-                <label for="data-plywania">Data pływania</label>
-                <input type="date" id="data-plywania" name="data-plywania" required>
-            </div>
-            <div>
                 <label for="szkola">Szkoła</label>
                 <input type="text" id="szkola" name="szkola" required maxlength="40">
             </div>
             <div>
                 <label for="miejscowosc">Miejscowość</label>
                 <input type="text" id="miejscowosc" name="miejscowosc" required maxlength="100">
-            </div>
-            <div>
-                <label for="styl">Styl pływania</label>
-                <select id="styl" name="styl" required>
-                    <option value="kraul">Kraul</option>
-                    <option value="styl klasyczny">Styl klasyczny</option>
-                    <option value="motylkowy">Motylkowy</option>
-                    <option value="grzbietowy">Grzbietowy</option>
-                </select>
             </div>
             <button type="submit">Zapisz się</button>
         </form>
