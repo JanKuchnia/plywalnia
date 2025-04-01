@@ -170,11 +170,9 @@ try {
             <table>
                 <thead>
                     <tr>
-                        <th>ID Zawodnika</th>
                         <th>Imię i nazwisko zawodnika</th>
                         <th>Wynik i dystans</th>
                         <th>Styl pływania</th>
-                        <th>ID Opiekuna</th>
                         <th>Imię i nazwisko opiekuna</th>
                         <th>Szkoła</th>
                     </tr>
@@ -182,16 +180,14 @@ try {
                 <tbody>
                     <?php if (empty($wyniki)): ?>
                         <tr>
-                            <td colspan="7">Brak danych w tabeli</td>
+                            <td colspan="5">Brak danych w tabeli</td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($wyniki as $wiersz): ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($wiersz['id_zawodnika']); ?></td>
                                 <td><?php echo htmlspecialchars($wiersz['zawodnik_imie_nazwisko']); ?></td>
                                 <td><?php echo htmlspecialchars($wiersz['zawodnik_wynik']); ?></td>
                                 <td><?php echo htmlspecialchars($wiersz['styl_plywania']); ?></td>
-                                <td><?php echo htmlspecialchars($wiersz['id_opiekuna']); ?></td>
                                 <td><?php echo htmlspecialchars($wiersz['opiekun_imie_nazwisko']); ?></td>
                                 <td><?php echo htmlspecialchars($wiersz['id_szkoly'] . ' - ' . $wiersz['nazwa_szkoly']); ?></td>
                             </tr>
