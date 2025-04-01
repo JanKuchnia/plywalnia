@@ -5,10 +5,10 @@ $error_message = null;
 
 try {
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $conn = new mysqli("localhost", "root", "", "plywanie");
+        $polaczenie = new mysqli("localhost", "root", "", "plywanie");
         
-        if ($conn->connect_error) {
-            throw new Exception("Connection failed: " . $conn->connect_error);
+        if ($polaczenie->connect_error) {
+            throw new Exception("Connection failed: " . $polaczenie->connect_error);
         }
 
         $zawodnik_imie = filter_input(INPUT_POST, 'zawodnik-imie', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -23,9 +23,9 @@ try {
             throw new Exception("Nieprawidłowy rok urodzenia");
         }
 
-        $conn->begin_transaction();
+        $polaczenie->begin_transaction();
 
-        $stmt = $conn->prepare("SELECT id_szkoly FROM szkola WHERE nazwa = ? AND miejscowosc = ?");
+        $stmt = $polaczenie->prepare("SELECT id_szkoly FROM szkola WHERE nazwa = ? AND miejscowosc = ?");
         $stmt->bind_param("ss", $szkola_nazwa, $miejscowosc);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -34,36 +34,36 @@ try {
             $row = $result->fetch_assoc();
             $id_szkoly = $row['id_szkoly'];
         } else {
-            $stmt = $conn->prepare("INSERT INTO szkola (nazwa, miejscowosc) VALUES (?, ?)");
+            $stmt = $polaczenie->prepare("INSERT INTO szkola (nazwa, miejscowosc) VALUES (?, ?)");
             $stmt->bind_param("ss", $szkola_nazwa, $miejscowosc);
             $stmt->execute();
             $id_szkoly = $stmt->insert_id;
         }
 
-        $stmt = $conn->prepare("INSERT INTO opiekun (imie, nazwisko, id_szkoly) VALUES (?, ?, ?)");
+        $stmt = $polaczenie->prepare("INSERT INTO opiekun (imie, nazwisko, id_szkoly) VALUES (?, ?, ?)");
         $stmt->bind_param("ssi", $opiekun_imie, $opiekun_nazwisko, $id_szkoly);
         $stmt->execute();
         $id_opiekuna = $stmt->insert_id;
 
-        $stmt = $conn->prepare("INSERT INTO zawodnik (imie, nazwisko, id_szkoly, id_opiekuna, rok_urodzenia) VALUES (?, ?, ?, ?, ?)");
+        $stmt = $polaczenie->prepare("INSERT INTO zawodnik (imie, nazwisko, id_szkoly, id_opiekuna, rok_urodzenia) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param("ssiis", $zawodnik_imie, $zawodnik_nazwisko, $id_szkoly, $id_opiekuna, $zawodnik_rok);
         $stmt->execute();
         $id_zawodnika = $stmt->insert_id;
 
-        $stmt = $conn->prepare("INSERT INTO zgloszenie (id_zawodnik, id_szkoly, id_opiekuna) VALUES (?, ?, ?)");
+        $stmt = $polaczenie->prepare("INSERT INTO zgloszenie (id_zawodnik, id_szkoly, id_opiekuna) VALUES (?, ?, ?)");
         $stmt->bind_param("iii", $id_zawodnika, $id_szkoly, $id_opiekuna);
         $stmt->execute();
 
-        $conn->commit();
+        $polaczenie->commit();
         $success_message = "Zapisano pomyślnie!";
         
         $stmt->close();
-        $conn->close();
+        $polaczenie->close();
     }
 } catch (Exception $e) {
-    if (isset($conn) && !$conn->connect_error) {
-        $conn->rollback();
-        $conn->close();
+    if (isset($polaczenie) && !$polaczenie->connect_error) {
+        $polaczenie->rollback();
+        $polaczenie->close();
     }
     $connection_error = true;
     $error_message = "Wystąpił błąd: " . $e->getMessage();
