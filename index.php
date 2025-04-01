@@ -2,71 +2,59 @@
 $wyniki = [];
 $najlepsi_plywacy = [];
 $blad_polaczenia = false;
+$wiadomosc_bledu = '';
 
 try {
     $polaczenie = new mysqli("localhost", "root", "", "plywanie");
 
     if ($polaczenie->connect_error) {
-        throw new Exception("Błąd połączenia: " . $polaczenie->connect_error);
+        throw new Exception("Błąd połączenia z bazą danych");
     }
 
-    $sql = "
-        SELECT 
-            z.id_zawodnik AS id_zawodnika,
-            CONCAT(z.imie, ' ', z.nazwisko) AS zawodnik_imie_nazwisko,
-            IFNULL(CONCAT(TIME_FORMAT(w.czas, '%H:%i:%s'), ' / ', w.dystans, 'm'), 'Brak wyniku') AS zawodnik_wynik,
-            w.style AS styl_plywania,
-            o.id_opiekuna,
-            CONCAT(o.imie, ' ', o.nazwisko) AS opiekun_imie_nazwisko,
-            z.id_szkoly,
-            s.nazwa AS nazwa_szkoly
-        FROM 
-            zawodnik z
-        LEFT JOIN 
-            wynik w ON z.id_zawodnik = w.id_zawodnik
-        INNER JOIN 
-            opiekun o ON z.id_opiekuna = o.id_opiekuna
-        INNER JOIN 
-            szkola s ON z.id_szkoly = s.id_szkoly
-        ORDER BY 
-            w.czas ASC
-    ";
+    $sql = "SELECT 
+                z.id_zawodnik AS id_zawodnika,
+                CONCAT(z.imie, ' ', z.nazwisko) AS zawodnik_imie_nazwisko,
+                IFNULL(CONCAT(TIME_FORMAT(w.czas, '%H:%i:%s'), ' / ', w.dystans, 'm'), 'Brak wyniku') AS zawodnik_wynik,
+                w.style AS styl_plywania,
+                o.id_opiekuna,
+                CONCAT(o.imie, ' ', o.nazwisko) AS opiekun_imie_nazwisko,
+                z.id_szkoly,
+                s.nazwa AS nazwa_szkoly
+            FROM zawodnik z
+            LEFT JOIN wynik w ON z.id_zawodnik = w.id_zawodnik
+            INNER JOIN opiekun o ON z.id_opiekuna = o.id_opiekuna
+            INNER JOIN szkola s ON z.id_szkoly = s.id_szkoly
+            ORDER BY w.czas ASC";
 
-    $sql_najlepsi_plywacy = "
-        SELECT 
-            CONCAT(z.imie, ' ', z.nazwisko) AS zawodnik_imie_nazwisko,
-            TIME_FORMAT(w.czas, '%H:%i:%s') AS czas,
-            w.dystans,
-            w.style AS styl_plywania
-        FROM 
-            zawodnik z
-        INNER JOIN 
-            wynik w ON z.id_zawodnik = w.id_zawodnik
-        WHERE 
-            w.czas IS NOT NULL
-        ORDER BY 
-            w.czas ASC
-        LIMIT 3
-    ";
+    $sql_najlepsi = "SELECT 
+                        CONCAT(z.imie, ' ', z.nazwisko) AS zawodnik_imie_nazwisko,
+                        TIME_FORMAT(w.czas, '%H:%i:%s') AS czas,
+                        w.dystans,
+                        w.style AS styl_plywania
+                    FROM zawodnik z
+                    INNER JOIN wynik w ON z.id_zawodnik = w.id_zawodnik
+                    WHERE w.czas IS NOT NULL
+                    ORDER BY w.czas ASC
+                    LIMIT 3";
 
-    if (!($wynik = $polaczenie->query($sql))) {
-        throw new Exception("Błąd zapytania: " . $polaczenie->error);
-    }
-    
-    while ($wiersz = $wynik->fetch_assoc()) {
-        $wyniki[] = $wiersz;
+    if ($result = $polaczenie->query($sql)) {
+        while ($row = $result->fetch_assoc()) {
+            $wyniki[] = $row;
+        }
+        $result->close();
+    } else {
+        throw new Exception("Błąd podczas pobierania listy pływaków");
     }
 
-    if (!($wynik_najlepsi_plywacy = $polaczenie->query($sql_najlepsi_plywacy))) {
-        throw new Exception("Błąd zapytania: " . $polaczenie->error);
+    if ($result = $polaczenie->query($sql_najlepsi)) {
+        while ($row = $result->fetch_assoc()) {
+            $najlepsi_plywacy[] = $row;
+        }
+        $result->close();
+    } else {
+        throw new Exception("Błąd podczas pobierania najlepszych pływaków");
     }
 
-    while ($wiersz = $wynik_najlepsi_plywacy->fetch_assoc()) {
-        $najlepsi_plywacy[] = $wiersz;
-    }
-
-    $wynik->close();
-    $wynik_najlepsi_plywacy->close();
     $polaczenie->close();
 
 } catch (Exception $e) {
