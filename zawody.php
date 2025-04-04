@@ -4,14 +4,14 @@ $success_message = null;
 $error_message = null;
 
 try {
-    $conn = new mysqli("localhost", "root", "", "plywanie");
-    
-    if ($conn->connect_error) {
-        throw new Exception("Connection failed: " . $conn->connect_error);
+    $polaczenie = new mysqli("localhost", "root", "", "plywanie");
+
+    if ($polaczenie->connect_error) {
+        throw new Exception("Błąd połączenia z bazą danych");
     }
 
     $zawodnicy_query = "SELECT id_zawodnik, CONCAT(imie, ' ', nazwisko) AS zawodnik_name FROM zawodnik";
-    $zawodnicy_result = $conn->query($zawodnicy_query);
+    $zawodnicy_result = $polaczenie->query($zawodnicy_query);
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $id_zawodnika = filter_input(INPUT_POST, 'zawodnik', FILTER_VALIDATE_INT);
@@ -24,7 +24,7 @@ try {
         }
 
         // Get swimmer's school
-        $stmt = $conn->prepare("SELECT id_szkoly FROM zawodnik WHERE id_zawodnik = ?");
+        $stmt = $polaczenie->prepare("SELECT id_szkoly FROM zawodnik WHERE id_zawodnik = ?");
         $stmt->bind_param("i", $id_zawodnika);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -32,7 +32,7 @@ try {
         $id_szkoly = $row['id_szkoly'];
 
         // Insert result
-        $stmt = $conn->prepare("INSERT INTO wynik (id_zawodnik, id_szkoly, czas, dystans, style) VALUES (?, ?, ?, ?, ?)");
+        $stmt = $polaczenie->prepare("INSERT INTO wynik (id_zawodnik, id_szkoly, czas, dystans, style) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param("iisss", $id_zawodnika, $id_szkoly, $czas, $dystans, $styl);
         $stmt->execute();
 

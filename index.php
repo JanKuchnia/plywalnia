@@ -37,6 +37,19 @@ try {
                     ORDER BY w.czas ASC
                     LIMIT 3";
 
+    $sql_zawody = "SELECT 
+                        z.rok_urodzenia,
+                        z.imie,
+                        z.nazwisko,
+                        TIME_FORMAT(w.czas, '%i:%s.%f') AS wynik,
+                        w.dystans,
+                        w.style,
+                        s.nazwa AS szkola
+                    FROM zawodnik z
+                    INNER JOIN wynik w ON z.id_zawodnik = w.id_zawodnik
+                    INNER JOIN szkola s ON z.id_szkoly = s.id_szkoly
+                    ORDER BY z.rok_urodzenia DESC, w.czas ASC";
+
     if ($result = $polaczenie->query($sql)) {
         while ($row = $result->fetch_assoc()) {
             $wyniki[] = $row;
@@ -55,11 +68,44 @@ try {
         throw new Exception("Błąd podczas pobierania najlepszych pływaków");
     }
 
+    $wyniki_zawodow = [];
+    if ($result = $polaczenie->query($sql_zawody)) {
+        while ($row = $result->fetch_assoc()) {
+            $wyniki_zawodow[] = $row;
+        }
+        $result->close();
+    } else {
+        throw new Exception("Błąd podczas pobierania wyników zawodów");
+    }
+
+    $wyniki_grupowane = [];
+    foreach ($wyniki_zawodow as $wynik) {
+        $rocznik = $wynik['rok_urodzenia'];
+        if (!isset($wyniki_grupowane[$rocznik])) {
+            $wyniki_grupowane[$rocznik] = [];
+        }
+        $wyniki_grupowane[$rocznik][] = $wynik;
+    }
+
     $polaczenie->close();
 
 } catch (Exception $e) {
     $blad_polaczenia = true;
     $wiadomosc_bledu = $e->getMessage();
+}
+function przetlumaczStyl($styl) {
+    switch ($styl) {
+        case 'kraul':
+            return 'stylem dowolnym (kraul)';
+        case 'styl klasyczny':
+            return 'stylem klasycznym';
+        case 'motylkowy':
+            return 'stylem motylkowym';
+        case 'grzbietowy':
+            return 'stylem grzbietowym';
+        default:
+            return $styl;
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -69,7 +115,6 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kryta Pływalnia - Zawody i Więcej</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="najlepszyPlywak.jpeg">
 </head>
 <body>
     <header>
@@ -77,10 +122,10 @@ try {
         <p>Sport, emocje, rywalizacja</p>
     </header>
     <nav>
-    <a href="index.php">Strona Główna</a>
-    <a href="zapisy.php">Zapisy</a>
-    <a href="zawody.php">Zawody</a>
-</nav>
+        <a href="index.php">Strona Główna</a>
+        <a href="zapisy.php">Zapisy</a>
+        <a href="zawody.php">Zawody</a>
+    </nav>
     <section class="glowna">
         <h2>Najlepsze miejsce dla pływaków</h2>
         <p>Dołącz do naszych zawodów i poczuj prawdziwą rywalizację!</p>
@@ -98,8 +143,6 @@ try {
             <h3>Zapisy</h3>
             <p>Rejestracja uczestników otwarta do 15 lutego 2025 roku.</p>
         </div>
-    </section>
-    <section id="basen" class="zawartosc">
         <div class="karta">
             <h3>Nasze Obiekty</h3>
             <p>Oferujemy baseny o różnej głębokości i nowoczesne zaplecze.</p>
@@ -109,45 +152,114 @@ try {
             <p>Zapraszamy na lekcje pływania i zajęcia z aqua fitness.</p>
         </div>
     </section>
-    <section id="najlepszyPływak">
-    <h1>Pływak Sezonu 2024</h1>
-    <img src="najlepszyPływak.jpeg" alt="Bartosz Szuba - Najlepszy Pływak">
-    <h3>Bartosz Szuba</h3>
-    <p class="osiagniecia">
-        Mistrz województwa w stylu motylkowym • Rekordzista klubu na dystansie 100m • 
-        Reprezentant Polski juniorów
-    </p>
-    <h2>Top 3 Pływaków</h2>
-    <table class="tabela-najlepsi-plywacy">
-        <thead>
-            <tr>
-                <th>Imię i Nazwisko</th>
-                <th>Czas</th>
-                <th>Dystans</th>
-                <th>Styl Pływania</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (empty($najlepsi_plywacy)): ?>
-                <tr>
-                    <td colspan="4">Brak danych o najlepszych pływakach.</td>
-                </tr>
-            <?php else: ?>
-                <?php foreach ($najlepsi_plywacy as $index => $plywak): ?>
-                    <tr>
-                        <td>
-                            <?php echo $index === 0 ? '&#129351; ' : ($index === 1 ? '&#129352; ' : ($index === 2 ? '&#129353; ' : '')); ?>
-                            <?php echo htmlspecialchars($plywak['zawodnik_imie_nazwisko']); ?>
-                        </td>
-                        <td><?php echo htmlspecialchars($plywak['czas']); ?></td>
-                        <td><?php echo htmlspecialchars($plywak['dystans']); ?>m</td>
-                        <td><?php echo htmlspecialchars($plywak['styl_plywania']); ?></td>
-                    </tr>
+    <section class="wyniki-zawodow">
+        <h1>WYNIKI GMINNYCH ZAWODÓW PŁYWACKICH</h1>
+        <h2>Szkoły Podstawowe, Myślenice <?php echo date('d.m.Y'); ?></h2>
+        
+        <?php if ($blad_polaczenia): ?>
+            <div class="alert error">
+                <?php echo htmlspecialchars($wiadomosc_bledu); ?>
+            </div>
+        <?php else: ?>
+            <?php 
+            krsort($wyniki_grupowane); 
+            
+            foreach ($wyniki_grupowane as $rocznik => $grupa): 
+                $dyscypliny = [];
+                foreach ($grupa as $zawodnik) {
+                    $klucz = $zawodnik['dystans'] . 'm ' . $zawodnik['style'];
+                    if (!isset($dyscypliny[$klucz])) {
+                        $dyscypliny[$klucz] = [];
+                    }
+                    $dyscypliny[$klucz][] = $zawodnik;
+                }
+            ?>
+                <h3>Rocznik <?php echo htmlspecialchars($rocznik); ?></h3>
+                
+                <?php foreach ($dyscypliny as $dyscyplina => $zawodnicy): 
+                    $pierwszy_zawodnik = $zawodnicy[0];
+                    $dystans = $pierwszy_zawodnik['dystans'];
+                    $styl = przetlumaczStyl($pierwszy_zawodnik['style']);
+                ?>
+                    <h4><?php echo htmlspecialchars($dystans); ?>m <?php echo htmlspecialchars($styl); ?></h4>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="miejsce">miejsce</th>
+                                <th class="czas">wynik</th>
+                                <th>nazwisko</th>
+                                <th>imię</th>
+                                <th>szkoła</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php 
+                            usort($zawodnicy, function($a, $b) {
+                                return $a['wynik'] <=> $b['wynik'];
+                            });
+                            
+                            foreach ($zawodnicy as $index => $wynik): 
+                                $miejsce = $index + 1;
+                                $rzymskie = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
+                                $miejsce_display = $miejsce <= count($rzymskie) ? $rzymskie[$miejsce-1] : $miejsce;
+                            ?>
+                                <tr>
+                                    <td class="miejsce"><?php echo $miejsce_display; ?></td>
+                                    <td class="czas"><?php echo htmlspecialchars($wynik['wynik']); ?></td>
+                                    <td><?php echo htmlspecialchars($wynik['nazwisko']); ?></td>
+                                    <td><?php echo htmlspecialchars($wynik['imie']); ?></td>
+                                    <td><?php echo htmlspecialchars($wynik['szkola']); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 <?php endforeach; ?>
-            <?php endif; ?>
-        </tbody>
-    </table>
-</section>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </section>
+    
+    <section id="basen" class="zawartosc">
+    </section>
+    <section id="najlepszyPływak">
+        <h1>Pływak Sezonu 2024</h1>
+        <img src="najlepszyPływak.jpeg" alt="Bartosz Szuba - Najlepszy Pływak">
+        <h3>Bartosz Szuba</h3>
+        <p class="osiagniecia">
+            Mistrz województwa w stylu motylkowym • Rekordzista klubu na dystansie 100m • 
+            Reprezentant Polski juniorów
+        </p>
+        <h2>Top 3 Pływaków</h2>
+        <table class="tabela-najlepsi-plywacy">
+            <thead>
+                <tr>
+                    <th>Imię i Nazwisko</th>
+                    <th>Czas</th>
+                    <th>Dystans</th>
+                    <th>Styl Pływania</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (empty($najlepsi_plywacy)): ?>
+                    <tr>
+                        <td colspan="4">Brak danych o najlepszych pływakach.</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($najlepsi_plywacy as $index => $plywak): ?>
+                        <tr>
+                            <td>
+                                <?php echo $index === 0 ? '&#129351; ' : ($index === 1 ? '&#129352; ' : ($index === 2 ? '&#129353; ' : '')); ?>
+                                <?php echo htmlspecialchars($plywak['zawodnik_imie_nazwisko']); ?>
+                            </td>
+                            <td><?php echo htmlspecialchars($plywak['czas']); ?></td>
+                            <td><?php echo htmlspecialchars($plywak['dystans']); ?>m</td>
+                            <td><?php echo htmlspecialchars(przetlumaczStyl($plywak['styl_plywania'])); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </section>
     <section class="tabela-sekcja">
         <h1>Lista Rejestracji</h1>
         <?php if ($blad_polaczenia): ?>
@@ -175,7 +287,7 @@ try {
                             <tr>
                                 <td><?php echo htmlspecialchars($wiersz['zawodnik_imie_nazwisko']); ?></td>
                                 <td><?php echo htmlspecialchars($wiersz['zawodnik_wynik']); ?></td>
-                                <td><?php echo htmlspecialchars($wiersz['styl_plywania']); ?></td>
+                                <td><?php echo htmlspecialchars(przetlumaczStyl($wiersz['styl_plywania'])); ?></td>
                                 <td><?php echo htmlspecialchars($wiersz['opiekun_imie_nazwisko']); ?></td>
                                 <td><?php echo htmlspecialchars($wiersz['id_szkoly'] . ' - ' . $wiersz['nazwa_szkoly']); ?></td>
                             </tr>
