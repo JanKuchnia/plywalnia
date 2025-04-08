@@ -50,6 +50,28 @@ try {
                     INNER JOIN szkola s ON z.id_szkoly = s.id_szkoly
                     ORDER BY z.rok_urodzenia DESC, w.czas ASC";
 
+$sql_zawodnicy_bez_wynikow = "SELECT 
+                             z.id_zawodnik AS id_zawodnika,
+                             CONCAT(z.imie, ' ', z.nazwisko) AS zawodnik_imie_nazwisko,
+                             CONCAT(o.imie, ' ', o.nazwisko) AS opiekun_imie_nazwisko,
+                             z.id_szkoly,
+                             s.nazwa AS nazwa_szkoly
+                         FROM zawodnik z
+                         INNER JOIN opiekun o ON z.id_opiekuna = o.id_opiekuna
+                         INNER JOIN szkola s ON z.id_szkoly = s.id_szkoly
+                         LEFT JOIN wynik w ON z.id_zawodnik = w.id_zawodnik
+                         WHERE w.id_wyniku IS NULL
+                         ORDER BY z.nazwisko, z.imie";
+
+$zawodnicy_bez_wynikow = [];
+if ($result = $polaczenie->query($sql_zawodnicy_bez_wynikow)) {
+    while ($row = $result->fetch_assoc()) {
+        $zawodnicy_bez_wynikow[] = $row;
+    }
+    $result->close();
+} else {
+    throw new Exception("Błąd podczas pobierania listy zawodników bez wyników");
+}
     if ($result = $polaczenie->query($sql)) {
         while ($row = $result->fetch_assoc()) {
             $wyniki[] = $row;
@@ -398,6 +420,39 @@ function przetlumaczStyl($styl) {
             </tbody>
         </table>
     </section>
+    <section class="tabela-sekcja">
+    <h1>Lista Zawodników Bez Wyników</h1>
+    <?php if ($blad_polaczenia): ?>
+        <div class="alert error">
+            <?php echo htmlspecialchars($wiadomosc_bledu); ?>
+        </div>
+    <?php else: ?>
+        <table>
+            <thead>
+                <tr>
+                    <th>Imię i nazwisko zawodnika</th>
+                    <th>Imię i nazwisko opiekuna</th>
+                    <th>Szkoła</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (empty($zawodnicy_bez_wynikow)): ?>
+                    <tr>
+                        <td colspan="3">Wszyscy zawodnicy mają wyniki</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($zawodnicy_bez_wynikow as $zawodnik): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($zawodnik['zawodnik_imie_nazwisko']); ?></td>
+                            <td><?php echo htmlspecialchars($zawodnik['opiekun_imie_nazwisko']); ?></td>
+                            <td><?php echo htmlspecialchars($zawodnik['id_szkoly'] . ' - ' . $zawodnik['nazwa_szkoly']); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
+</section>
     <section class="tabela-sekcja">
         <h1>Lista Rejestracji</h1>
         <?php if ($blad_polaczenia): ?>
