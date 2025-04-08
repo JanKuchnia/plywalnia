@@ -23,7 +23,6 @@ try {
             throw new Exception("Proszę wypełnić wszystkie pola.");
         }
 
-        // Get swimmer's school
         $stmt = $polaczenie->prepare("SELECT id_szkoly FROM zawodnik WHERE id_zawodnik = ?");
         $stmt->bind_param("i", $id_zawodnika);
         $stmt->execute();
@@ -31,7 +30,6 @@ try {
         $row = $result->fetch_assoc();
         $id_szkoly = $row['id_szkoly'];
 
-        // Insert result
         $stmt = $polaczenie->prepare("INSERT INTO wynik (id_zawodnik, id_szkoly, czas, dystans, style) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param("iisss", $id_zawodnika, $id_szkoly, $czas, $dystans, $styl);
         $stmt->execute();
