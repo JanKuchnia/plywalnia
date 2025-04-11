@@ -331,7 +331,7 @@ function przetlumaczStyl($styl) {
                     <?php foreach ($najlepsi_plywacy as $index => $plywak): ?>
                         <tr>
                             <td>
-                                <?php echo $index === 0 ? '&#129351; ' : ($index === 1 ? '&#129352; ' : ($index === 2 ? '&#129353; ' : '')); ?>
+                                <?php echo $index == 0 ? '&#129351; ' : ($index == 1 ? '&#129352; ' : ($index == 2 ? '&#129353; ' : '')); ?>
                                 <?php echo htmlspecialchars($plywak['zawodnik_imie_nazwisko']); ?>
                             </td>
                             <td><?php echo htmlspecialchars($plywak['czas']); ?></td>
