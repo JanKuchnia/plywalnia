@@ -183,201 +183,124 @@ function przetlumaczStyl($styl) {
         </div>
     </section>
     <section class="wyniki-zawodow">
-        <h1>WYNIKI GMINNYCH ZAWODÓW PŁYWACKICH</h1>
-        <h2>Szkoły Podstawowe, Myślenice <?php echo date('d.m.Y'); ?></h2>
-        
-        <?php if ($blad_polaczenia): ?>
-            <div class="alert error">
-                <?php echo htmlspecialchars($wiadomosc_bledu); ?>
-            </div>
-        <?php else: ?>
-            <div class="roczniki-container">
-                <div class="roczniki-row">
-                    <div class="rocznik-column">
-                        <h3 class="dystans-naglowek">50m</h3>
-                        <?php if (isset($wyniki_grupowane_dystans['50'])): ?>
-                            <?php krsort($wyniki_grupowane_dystans['50']); ?>
-                            <?php foreach ($wyniki_grupowane_dystans['50'] as $rocznik => $zawodnicy): ?>
-                                <h4>Rocznik <?php echo htmlspecialchars($rocznik); ?></h4>
-                                <table class="compact-table">
-                                    <thead>
+    <h1>WYNIKI GMINNYCH ZAWODÓW PŁYWACKICH</h1>
+    <h2>Szkoły Podstawowe, Myślenice <?php echo date('d.m.Y'); ?></h2>
+    
+    <?php if ($blad_polaczenia): ?>
+        <div class="alert error">
+            <?php echo htmlspecialchars($wiadomosc_bledu); ?>
+        </div>
+    <?php else: ?>
+        <div class="roczniki-container">
+            <div class="roczniki-row">
+                <div class="rocznik-column">
+                    <h3 class="dystans-naglowek">50m</h3>
+                    <?php if (isset($wyniki_grupowane_dystans['50'])): ?>
+                        <?php krsort($wyniki_grupowane_dystans['50']); ?>
+                        <?php foreach ($wyniki_grupowane_dystans['50'] as $rocznik => $zawodnicy): ?>
+                            <h4>Rocznik <?php echo htmlspecialchars($rocznik); ?></h4>
+                            <table class="compact-table">
+                                <thead>
+                                    <tr>
+                                        <th class="czas">czas</th>
+                                        <th>zawodnik</th>
+                                        <th>szkoła</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php 
+                                    usort($zawodnicy, function($a, $b) {
+                                        return $a['wynik'] <=> $b['wynik'];
+                                    });
+                                    
+                                    foreach ($zawodnicy as $wynik): ?>
                                         <tr>
-                                            <th class="miejsce">m-ce</th>
-                                            <th class="czas">czas</th>
-                                            <th>nazwisko</th>
-                                            <th>szkoła</th>
+                                            <td class="czas"><?php echo htmlspecialchars($wynik['wynik']); ?></td>
+                                            <td><?php echo htmlspecialchars($wynik['imie'] . ' ' . $wynik['nazwisko']); ?></td>
+                                            <td><?php echo htmlspecialchars($wynik['szkola']); ?></td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php 
-                                        usort($zawodnicy, function($a, $b) {
-                                            return $a['wynik'] <=> $b['wynik'];
-                                        });
-                                        
-                                        foreach ($zawodnicy as $index => $wynik): 
-                                            $miejsce = $index + 1;
-                                            $rzymskie = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
-                                            $miejsce_display = $miejsce <= count($rzymskie) ? $rzymskie[$miejsce-1] : $miejsce;
-                                        ?>
-                                            <tr>
-                                                <td class="miejsce"><?php echo $miejsce_display; ?></td>
-                                                <td class="czas"><?php echo htmlspecialchars($wynik['wynik']); ?></td>
-                                                <td><?php echo htmlspecialchars($wynik['nazwisko']); ?></td>
-                                                <td><?php echo htmlspecialchars($wynik['szkola']); ?></td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <p class="no-results">Brak wyników dla dystansu 50m</p>
-                        <?php endif; ?>
-                    </div>
-                    
-                    <div class="rocznik-column">
-                        <h3 class="dystans-naglowek">100m</h3>
-                        <?php if (isset($wyniki_grupowane_dystans['100'])): ?>
-                            <?php krsort($wyniki_grupowane_dystans['100']); ?>
-                            <?php foreach ($wyniki_grupowane_dystans['100'] as $rocznik => $zawodnicy): ?>
-                                <h4>Rocznik <?php echo htmlspecialchars($rocznik); ?></h4>
-                                <table class="compact-table">
-                                    <thead>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p class="no-results">Brak wyników dla dystansu 50m</p>
+                    <?php endif; ?>
+                </div>
+                
+                <div class="rocznik-column">
+                    <h3 class="dystans-naglowek">100m</h3>
+                    <?php if (isset($wyniki_grupowane_dystans['100'])): ?>
+                        <?php krsort($wyniki_grupowane_dystans['100']); ?>
+                        <?php foreach ($wyniki_grupowane_dystans['100'] as $rocznik => $zawodnicy): ?>
+                            <h4>Rocznik <?php echo htmlspecialchars($rocznik); ?></h4>
+                            <table class="compact-table">
+                                <thead>
+                                    <tr>
+                                        <th class="czas">czas</th>
+                                        <th>zawodnik</th>
+                                        <th>szkoła</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php 
+                                    usort($zawodnicy, function($a, $b) {
+                                        return $a['wynik'] <=> $b['wynik'];
+                                    });
+                                    
+                                    foreach ($zawodnicy as $wynik): ?>
                                         <tr>
-                                            <th class="miejsce">m-ce</th>
-                                            <th class="czas">czas</th>
-                                            <th>nazwisko</th>
-                                            <th>szkoła</th>
+                                            <td class="czas"><?php echo htmlspecialchars($wynik['wynik']); ?></td>
+                                            <td><?php echo htmlspecialchars($wynik['imie'] . ' ' . $wynik['nazwisko']); ?></td>
+                                            <td><?php echo htmlspecialchars($wynik['szkola']); ?></td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php 
-                                        usort($zawodnicy, function($a, $b) {
-                                            return $a['wynik'] <=> $b['wynik'];
-                                        });
-                                        
-                                        foreach ($zawodnicy as $index => $wynik): 
-                                            $miejsce = $index + 1;
-                                            $rzymskie = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
-                                            $miejsce_display = $miejsce <= count($rzymskie) ? $rzymskie[$miejsce-1] : $miejsce;
-                                        ?>
-                                            <tr>
-                                                <td class="miejsce"><?php echo $miejsce_display; ?></td>
-                                                <td class="czas"><?php echo htmlspecialchars($wynik['wynik']); ?></td>
-                                                <td><?php echo htmlspecialchars($wynik['nazwisko']); ?></td>
-                                                <td><?php echo htmlspecialchars($wynik['szkola']); ?></td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <p class="no-results">Brak wyników dla dystansu 100m</p>
-                        <?php endif; ?>
-                    </div>
-                    
-
-                    <div class="rocznik-column">
-                        <h3 class="dystans-naglowek">150m</h3>
-                        <?php if (isset($wyniki_grupowane_dystans['150'])): ?>
-                            <?php krsort($wyniki_grupowane_dystans['150']); ?>
-                            <?php foreach ($wyniki_grupowane_dystans['150'] as $rocznik => $zawodnicy): ?>
-                                <h4>Rocznik <?php echo htmlspecialchars($rocznik); ?></h4>
-                                <table class="compact-table">
-                                    <thead>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p class="no-results">Brak wyników dla dystansu 100m</p>
+                    <?php endif; ?>
+                </div>
+                
+                <div class="rocznik-column">
+                    <h3 class="dystans-naglowek">150m</h3>
+                    <?php if (isset($wyniki_grupowane_dystans['150'])): ?>
+                        <?php krsort($wyniki_grupowane_dystans['150']); ?>
+                        <?php foreach ($wyniki_grupowane_dystans['150'] as $rocznik => $zawodnicy): ?>
+                            <h4>Rocznik <?php echo htmlspecialchars($rocznik); ?></h4>
+                            <table class="compact-table">
+                                <thead>
+                                    <tr>
+                                        <th class="czas">czas</th>
+                                        <th>zawodnik</th>
+                                        <th>szkoła</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php 
+                                    usort($zawodnicy, function($a, $b) {
+                                        return $a['wynik'] <=> $b['wynik'];
+                                    });
+                                    
+                                    foreach ($zawodnicy as $wynik): ?>
                                         <tr>
-                                            <th class="miejsce">m-ce</th>
-                                            <th class="czas">czas</th>
-                                            <th>nazwisko</th>
-                                            <th>szkoła</th>
+                                            <td class="czas"><?php echo htmlspecialchars($wynik['wynik']); ?></td>
+                                            <td><?php echo htmlspecialchars($wynik['imie'] . ' ' . $wynik['nazwisko']); ?></td>
+                                            <td><?php echo htmlspecialchars($wynik['szkola']); ?></td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php 
-                                        usort($zawodnicy, function($a, $b) {
-                                            return $a['wynik'] <=> $b['wynik'];
-                                        });
-                                        
-                                        foreach ($zawodnicy as $index => $wynik): 
-                                            $miejsce = $index + 1;
-                                            $rzymskie = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
-                                            $miejsce_display = $miejsce <= count($rzymskie) ? $rzymskie[$miejsce-1] : $miejsce;
-                                        ?>
-                                            <tr>
-                                                <td class="miejsce"><?php echo $miejsce_display; ?></td>
-                                                <td class="czas"><?php echo htmlspecialchars($wynik['wynik']); ?></td>
-                                                <td><?php echo htmlspecialchars($wynik['nazwisko']); ?></td>
-                                                <td><?php echo htmlspecialchars($wynik['szkola']); ?></td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <p class="no-results">Brak wyników dla dystansu 150m</p>
-                        <?php endif; ?>
-                    </div>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p class="no-results">Brak wyników dla dystansu 150m</p>
+                    <?php endif; ?>
                 </div>
             </div>
-            
-            <div style="display:none;">
-            <?php 
-            krsort($wyniki_grupowane_dystans); 
-            
-            foreach ($wyniki_grupowane_dystans as $dystans => $roczniki): 
-                krsort($roczniki);
-                
-                foreach ($roczniki as $rocznik => $zawodnicy):
-                    $style = [];
-                    foreach ($zawodnicy as $zawodnik) {
-                        $styl = $zawodnik['style'];
-                        if (!isset($style[$styl])) {
-                            $style[$styl] = [];
-                        }
-                        $style[$styl][] = $zawodnik;
-                    }
-            ?>
-                <h3>Rocznik <?php echo htmlspecialchars($rocznik); ?> - <?php echo htmlspecialchars($dystans); ?>m</h3>
-                
-                <?php foreach ($style as $styl => $zawodnicy_styl): ?>
-                    <h4><?php echo htmlspecialchars(przetlumaczStyl($styl)); ?></h4>
-                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th class="miejsce">miejsce</th>
-                                <th class="czas">wynik</th>
-                                <th>nazwisko</th>
-                                <th>imię</th>
-                                <th>szkoła</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php 
-                            usort($zawodnicy_styl, function($a, $b) {
-                                return $a['wynik'] <=> $b['wynik'];
-                            });
-                            
-                            foreach ($zawodnicy_styl as $index => $wynik): 
-                                $miejsce = $index + 1;
-                                $rzymskie = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
-                                $miejsce_display = $miejsce <= count($rzymskie) ? $rzymskie[$miejsce-1] : $miejsce;
-                            ?>
-                                <tr>
-                                    <td class="miejsce"><?php echo $miejsce_display; ?></td>
-                                    <td class="czas"><?php echo htmlspecialchars($wynik['wynik']); ?></td>
-                                    <td><?php echo htmlspecialchars($wynik['nazwisko']); ?></td>
-                                    <td><?php echo htmlspecialchars($wynik['imie']); ?></td>
-                                    <td><?php echo htmlspecialchars($wynik['szkola']); ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                <?php endforeach; ?>
-            <?php endforeach; ?>
-            <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
-    </section>
+        </div>
+    <?php endif; ?>
+</section>
     
     <section id="basen" class="zawartosc">
     </section>
